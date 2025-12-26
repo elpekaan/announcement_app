@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ciu_announcement/core/theme/app_theme.dart';
 import 'package:ciu_announcement/injection_container.dart';
-import 'package:ciu_announcement/features/auth/presentation/pages/login_page.dart';
+import 'package:ciu_announcement/features/home/presentation/pages/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +20,7 @@ class CiuAnnouncementApp extends StatelessWidget {
       title: 'CIU Announcement',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const LoginPage(),
+      home: const HomePage(),
     );
   }
 }

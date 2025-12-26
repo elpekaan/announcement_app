@@ -16,6 +16,7 @@ class RegisterUseCase implements BaseUseCase<UserEntity, RegisterParams> {
       name: params.name,
       email: params.email,
       password: params.password,
+      role: params.role,
     );
   }
 }

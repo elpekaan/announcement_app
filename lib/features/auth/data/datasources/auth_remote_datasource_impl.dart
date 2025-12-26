@@ -4,9 +4,10 @@ import 'package:ciu_announcement/core/errors/exceptions/unauthorized_exception.d
 import 'package:ciu_announcement/core/network/api_client.dart';
 import 'package:ciu_announcement/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:ciu_announcement/features/auth/data/models/user_model.dart';
+import 'package:ciu_announcement/features/auth/domain/enums/user_role.dart';
 import 'package:dio/dio.dart';
 
-class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
+class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final ApiClient _apiClient;
 
   AuthRemoteDataSourceImpl(this._apiClient);
@@ -45,6 +46,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
     required String name,
     required String email,
     required String password,
+    required UserRole role,
   }) async {
     try {
       final response = await _apiClient.dio.post(
@@ -53,6 +55,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
           'name': name,
           'email': email,
           'password': password,
+          'role' : role,
         },
       );
 
@@ -62,7 +65,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
       return UserModel.fromJson(response.data['data']['user']);
     } on DioException catch (e) {
       throw ServerException(
-        e.message ?? 'Kayıt başarısız',
+        e.message ?? 'Registration failed',
         statusCode: e.response?.statusCode,
       );
     }

@@ -1,5 +1,6 @@
 import 'package:ciu_announcement/core/errors/failures/base/base_failure.dart';
 import 'package:ciu_announcement/features/auth/domain/entities/user_entity.dart';
+import 'package:ciu_announcement/features/auth/domain/enums/user_role.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class AuthRepository {
@@ -12,6 +13,7 @@ abstract class AuthRepository {
     required String name,
     required String email,
     required String password,
+    required UserRole role,
   });
 
   Future<Either<BaseFailure, void>> logout();

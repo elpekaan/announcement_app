@@ -6,11 +6,12 @@ import 'package:ciu_announcement/core/errors/failures/unauthorized_failure.dart'
 import 'package:ciu_announcement/core/network/network_info/base/base_network_info.dart';
 import 'package:ciu_announcement/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:ciu_announcement/features/auth/domain/entities/user_entity.dart';
+import 'package:ciu_announcement/features/auth/domain/enums/user_role.dart';
 import 'package:ciu_announcement/features/auth/domain/repositories/auth_repository.dart';
 import 'package:dartz/dartz.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDatasource _remoteDataSource;
+  final AuthRemoteDataSource _remoteDataSource;
   final BaseNetworkInfo _baseNetworkInfo;
 
   AuthRepositoryImpl(this._remoteDataSource, this._baseNetworkInfo);
@@ -38,12 +39,14 @@ class AuthRepositoryImpl implements AuthRepository {
     required String name,
     required String email,
     required String password,
+    required UserRole role,
   }) async {
     try {
       final userModel = await _remoteDataSource.register(
         name: name,
         email: email,
         password: password,
+        role: role,
       );
       return Right(userModel.toEntity());
     } on ServerException catch (e) {
