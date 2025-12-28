@@ -18,7 +18,4 @@ class UpdateAnnouncementParams {
     required this.priority,
     required this.targetAudience,
   });
-
-  @override
-  List<Object?> get props => [id, title, content, category, priority, targetAudience];
 }

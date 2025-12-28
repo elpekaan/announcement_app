@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_category.dart';
 
-class AnnouncementCategoryDropdownWidget extends StatelessWidget {
+class AnnouncementCategoryDropdownWidget extends StatefulWidget {
   final AnnouncementCategory? selectedCategory;
   final ValueChanged<AnnouncementCategory?> onChanged;
   final String? Function(AnnouncementCategory?)? validator;
@@ -14,11 +14,13 @@ class AnnouncementCategoryDropdownWidget extends StatelessWidget {
   });
 
   @override
+  State<AnnouncementCategoryDropdownWidget> createState() => _AnnouncementCategoryDropdownWidgetState();
+}
+
+class _AnnouncementCategoryDropdownWidgetState extends State<AnnouncementCategoryDropdownWidget> {
+  @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<AnnouncementCategory>(
-      value: selectedCategory,
-      onChanged: onChanged,
-      validator: validator,
       decoration: const InputDecoration(
         labelText: 'Kategori',
         hintText: 'Seçiniz',
@@ -29,6 +31,8 @@ class AnnouncementCategoryDropdownWidget extends StatelessWidget {
           child: Text(category.displayName),
         );
       }).toList(),
+      onChanged: widget.onChanged,
+      validator: widget.validator,
     );
   }
 }

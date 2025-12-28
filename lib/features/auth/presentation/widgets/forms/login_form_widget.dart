@@ -1,7 +1,4 @@
-import 'package:ciu_announcement/features/auth/presentation/widgets/buttons/auth_submit_button_widget.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/inputs/auth_password_field_widget.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/inputs/auth_text_field_widget.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class LoginFormWidget extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -26,41 +23,53 @@ class LoginFormWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AuthTextFieldWidget(
+          TextFormField(
             controller: emailController,
-            labelText: 'Email',
-            hintText: 'example@ciu.edu.tr',
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              hintText: 'ornek@ciu.edu.tr',
+              prefixIcon: Icon(Icons.email_outlined),
+            ),
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Email is required';
+                return 'Email gerekli';
               }
               if (!value.contains('@')) {
-                return 'Invalid email';
+                return 'Geçerli bir email girin';
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
-          AuthPasswordFieldWidget(
+          TextFormField(
             controller: passwordController,
-            labelText: 'Password',
-            hintText: 'Please enter your password',
+            decoration: const InputDecoration(
+              labelText: 'Şifre',
+              hintText: 'Şifrenizi girin',
+              prefixIcon: Icon(Icons.lock_outline),
+            ),
+            obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Password is required';
+                return 'Şifre gerekli';
               }
-              if (value.length < 8) {
-                return 'Password must be at least 8 characters';
+              if (value.length < 6) {
+                return 'Şifre en az 6 karakter olmalı';
               }
               return null;
             },
           ),
           const SizedBox(height: 24),
-          AuthSubmitButtonWidget(
-            text: 'Sign In',
-            onPressed: onSubmit,
-            isLoading: isLoading,
+          ElevatedButton(
+            onPressed: isLoading ? null : onSubmit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Giriş Yap'),
           ),
         ],
       ),

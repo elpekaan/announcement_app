@@ -12,9 +12,6 @@ class LoginUseCase implements BaseUseCase<UserEntity, LoginParams> {
 
   @override
   Future<Either<BaseFailure, UserEntity>> call(LoginParams params) {
-    return _repository.login(
-      email: params.email,
-      password: params.password,
-    );
+    return _repository.login(params.email, params.password);
   }
 }

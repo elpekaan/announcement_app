@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_priority.dart';
 
-class AnnouncementPriorityDropdownWidget extends StatelessWidget {
+class AnnouncementPriorityDropdownWidget extends StatefulWidget {
   final AnnouncementPriority? selectedPriority;
   final ValueChanged<AnnouncementPriority?> onChanged;
   final String? Function(AnnouncementPriority?)? validator;
@@ -14,11 +14,13 @@ class AnnouncementPriorityDropdownWidget extends StatelessWidget {
   });
 
   @override
+  State<AnnouncementPriorityDropdownWidget> createState() => _AnnouncementPriorityDropdownWidgetState();
+}
+
+class _AnnouncementPriorityDropdownWidgetState extends State<AnnouncementPriorityDropdownWidget> {
+  @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<AnnouncementPriority>(
-      value: selectedPriority,
-      onChanged: onChanged,
-      validator: validator,
       decoration: const InputDecoration(
         labelText: 'Öncelik',
         hintText: 'Seçiniz',
@@ -29,6 +31,8 @@ class AnnouncementPriorityDropdownWidget extends StatelessWidget {
           child: Text(priority.displayName),
         );
       }).toList(),
+      onChanged: widget.onChanged,
+      validator: widget.validator,
     );
   }
 }

@@ -6,7 +6,7 @@ class UserEntity extends BaseEntity {
   final String email;
   final UserRole role;
 
-  UserEntity({
+  const UserEntity({
     required super.id,
     required this.name,
     required this.email,

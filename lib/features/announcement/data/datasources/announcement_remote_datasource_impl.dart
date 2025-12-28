@@ -1,12 +1,12 @@
-import 'package:ciu_announcement/core/constants/api_endpoints.dart';
-import 'package:ciu_announcement/core/errors/exceptions/server_exception.dart';
+import 'package:dio/dio.dart';
 import 'package:ciu_announcement/core/network/api_client.dart';
+import 'package:ciu_announcement/core/errors/exceptions/server_exception.dart';
+import 'package:ciu_announcement/core/errors/exceptions/unauthorized_exception.dart';
 import 'package:ciu_announcement/features/announcement/data/datasources/announcement_remote_datasource.dart';
 import 'package:ciu_announcement/features/announcement/data/models/announcement_model.dart';
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_category.dart';
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_priority.dart';
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_target_audience.dart';
-import 'package:dio/dio.dart';
 
 class AnnouncementRemoteDataSourceImpl implements AnnouncementRemoteDataSource {
   final ApiClient _apiClient;
@@ -16,37 +16,40 @@ class AnnouncementRemoteDataSourceImpl implements AnnouncementRemoteDataSource {
   @override
   Future<List<AnnouncementModel>> getAll() async {
     try {
-      final response = await _apiClient.dio.get(ApiEndpoints.announcement);
+      final response = await _apiClient.dio.get('/announcements');
 
-      final List<dynamic> data = response.data['data'] as List<dynamic>;
-      return data
-          .map(
-            (json) => AnnouncementModel.fromJson(json as Map<String, dynamic>),
-          )
-          .toList();
+      if (response.data['success'] == true) {
+        final List<dynamic> data = response.data['data'];
+        return data.map((json) => AnnouncementModel.fromJson(json)).toList();
+      }
+
+      throw ServerException(response.data['message'] ?? 'Duyurular alınamadı');
     } on DioException catch (e) {
-      throw ServerException(
-        e.message ?? 'Something went wrong',
-        statusCode: e.response?.statusCode,
-      );
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Oturum süresi doldu');
+      }
+      throw ServerException(e.message ?? 'Bağlantı hatası');
     }
   }
 
   @override
   Future<AnnouncementModel> getById(int id) async {
     try {
-      final response = await _apiClient.dio.get(
-        ApiEndpoints.announcementById(id),
-      );
+      final response = await _apiClient.dio.get('/announcements/$id');
 
-      return AnnouncementModel.fromJson(
-        response.data['data'] as Map<String, dynamic>,
-      );
+      if (response.data['success'] == true) {
+        return AnnouncementModel.fromJson(response.data['data']);
+      }
+
+      throw ServerException(response.data['message'] ?? 'Duyuru bulunamadı');
     } on DioException catch (e) {
-      throw ServerException(
-        e.message ?? 'Something went wrong',
-        statusCode: e.response?.statusCode,
-      );
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Oturum süresi doldu');
+      }
+      if (e.response?.statusCode == 404) {
+        throw ServerException('Duyuru bulunamadı');
+      }
+      throw ServerException(e.message ?? 'Bağlantı hatası');
     }
   }
 
@@ -60,23 +63,33 @@ class AnnouncementRemoteDataSourceImpl implements AnnouncementRemoteDataSource {
   }) async {
     try {
       final response = await _apiClient.dio.post(
-        ApiEndpoints.announcement,
+        '/announcements',
         data: {
           'title': title,
           'content': content,
-          'category': category.value,
-          'priority': priority.value,
-          'target_audience': targetAudience.value,
+          'category': category.name,
+          'priority': priority.name,
+          'target_audience': targetAudience.name,
         },
       );
-      return AnnouncementModel.fromJson(
-        response.data['data'] as Map<String, dynamic>,
-      );
+
+      if (response.data['success'] == true) {
+        return AnnouncementModel.fromJson(response.data['data']);
+      }
+
+      throw ServerException(response.data['message'] ?? 'Duyuru oluşturulamadı');
     } on DioException catch (e) {
-      throw ServerException(
-        e.message ?? 'Something went wrong',
-        statusCode: e.response?.statusCode,
-      );
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Oturum süresi doldu');
+      }
+      if (e.response?.statusCode == 403) {
+        throw ServerException(e.response?.data['message'] ?? 'Yetkiniz yok');
+      }
+      if (e.response?.statusCode == 422) {
+        final message = e.response?.data['message'] ?? 'Validasyon hatası';
+        throw ServerException(message);
+      }
+      throw ServerException(e.message ?? 'Bağlantı hatası');
     }
   }
 
@@ -91,34 +104,54 @@ class AnnouncementRemoteDataSourceImpl implements AnnouncementRemoteDataSource {
   }) async {
     try {
       final response = await _apiClient.dio.put(
-        ApiEndpoints.announcementById(id),
+        '/announcements/$id',
         data: {
           'title': title,
           'content': content,
-          'category': category.value,
-          'priority': priority.value,
-          'target_audience': targetAudience.value,
+          'category': category.name,
+          'priority': priority.name,
+          'target_audience': targetAudience.name,
         },
       );
 
-      return AnnouncementModel.fromJson(response.data['data'] as Map<String, dynamic>);
+      if (response.data['success'] == true) {
+        return AnnouncementModel.fromJson(response.data['data']);
+      }
+
+      throw ServerException(response.data['message'] ?? 'Duyuru güncellenemedi');
     } on DioException catch (e) {
-      throw ServerException(
-        e.message ?? 'Something went wrong',
-        statusCode: e.response?.statusCode,
-      );
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Oturum süresi doldu');
+      }
+      if (e.response?.statusCode == 403) {
+        throw ServerException(e.response?.data['message'] ?? 'Yetkiniz yok');
+      }
+      if (e.response?.statusCode == 404) {
+        throw ServerException('Duyuru bulunamadı');
+      }
+      throw ServerException(e.message ?? 'Bağlantı hatası');
     }
   }
 
   @override
   Future<void> delete(int id) async {
     try {
-      await _apiClient.dio.delete(ApiEndpoints.announcementById(id));
+      final response = await _apiClient.dio.delete('/announcements/$id');
+
+      if (response.data['success'] != true) {
+        throw ServerException(response.data['message'] ?? 'Duyuru silinemedi');
+      }
     } on DioException catch (e) {
-      throw ServerException(
-        e.message ?? 'Something went wrong',
-        statusCode: e.response?.statusCode,
-      );
+      if (e.response?.statusCode == 401) {
+        throw UnauthorizedException('Oturum süresi doldu');
+      }
+      if (e.response?.statusCode == 403) {
+        throw ServerException(e.response?.data['message'] ?? 'Yetkiniz yok');
+      }
+      if (e.response?.statusCode == 404) {
+        throw ServerException('Duyuru bulunamadı');
+      }
+      throw ServerException(e.message ?? 'Bağlantı hatası');
     }
   }
 }

@@ -1,16 +1,22 @@
 enum AnnouncementPriority {
-  normal('normal', 'Normal'),
-  important('important', 'Important'),
-  urgent('urgent', 'Urgent');
+  normal,
+  important,
+  urgent;
 
-  final String value;
-  final String displayName;
+  String get displayName {
+    switch (this) {
+      case AnnouncementPriority.normal:
+        return 'Normal';
+      case AnnouncementPriority.important:
+        return 'Önemli';
+      case AnnouncementPriority.urgent:
+        return 'Acil';
+    }
+  }
 
-  const AnnouncementPriority(this.value, this.displayName);
-
-  static AnnouncementPriority fromString(String priority) {
+  static AnnouncementPriority fromString(String value) {
     return AnnouncementPriority.values.firstWhere(
-      (e) => e.value == priority.toLowerCase(),
+          (e) => e.name == value,
       orElse: () => AnnouncementPriority.normal,
     );
   }

@@ -1,17 +1,25 @@
 enum AnnouncementCategory {
-  academic('academic', 'Academic'),
-  administrative('administrative', 'Administrative'),
-  event('event', 'Event'),
-  urgent('urgent', 'Urgent');
+  academic,
+  administrative,
+  event,
+  urgent;
 
-  final String value;
-  final String displayName;
+  String get displayName {
+    switch (this) {
+      case AnnouncementCategory.academic:
+        return 'Akademik';
+      case AnnouncementCategory.administrative:
+        return 'İdari';
+      case AnnouncementCategory.event:
+        return 'Etkinlik';
+      case AnnouncementCategory.urgent:
+        return 'Acil';
+    }
+  }
 
-  const AnnouncementCategory(this.value, this.displayName);
-
-  static AnnouncementCategory fromString(String category) {
+  static AnnouncementCategory fromString(String value) {
     return AnnouncementCategory.values.firstWhere(
-      (e) => e.value == category.toLowerCase(),
+          (e) => e.name == value,
       orElse: () => AnnouncementCategory.academic,
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_target_audience.dart';
 
-class AnnouncementTargetAudienceDropdownWidget extends StatelessWidget {
+class AnnouncementTargetAudienceDropdownWidget extends StatefulWidget {
   final AnnouncementTargetAudience? selectedTargetAudience;
   final ValueChanged<AnnouncementTargetAudience?> onChanged;
   final String? Function(AnnouncementTargetAudience?)? validator;
@@ -14,11 +14,13 @@ class AnnouncementTargetAudienceDropdownWidget extends StatelessWidget {
   });
 
   @override
+  State<AnnouncementTargetAudienceDropdownWidget> createState() => _AnnouncementTargetAudienceDropdownWidgetState();
+}
+
+class _AnnouncementTargetAudienceDropdownWidgetState extends State<AnnouncementTargetAudienceDropdownWidget> {
+  @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<AnnouncementTargetAudience>(
-      value: selectedTargetAudience,
-      onChanged: onChanged,
-      validator: validator,
       decoration: const InputDecoration(
         labelText: 'Hedef Kitle',
         hintText: 'Seçiniz',
@@ -29,6 +31,8 @@ class AnnouncementTargetAudienceDropdownWidget extends StatelessWidget {
           child: Text(audience.displayName),
         );
       }).toList(),
+      onChanged: widget.onChanged,
+      validator: widget.validator,
     );
   }
 }

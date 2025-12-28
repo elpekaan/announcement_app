@@ -9,7 +9,7 @@ import 'package:ciu_announcement/features/auth/domain/usecases/params/login_para
 import 'package:ciu_announcement/features/auth/domain/usecases/params/register_params.dart';
 import 'package:ciu_announcement/features/auth/presentation/bloc/events/base/auth_event.dart';
 import 'package:ciu_announcement/features/auth/presentation/bloc/events/login_requested_event.dart';
-import 'package:ciu_announcement/features/auth/presentation/bloc/events/logout_reqeusted_event.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/events/logout_requested_event.dart';
 import 'package:ciu_announcement/features/auth/presentation/bloc/events/register_requested_event.dart';
 import 'package:ciu_announcement/features/auth/presentation/bloc/events/get_current_user_event.dart';
 import 'package:ciu_announcement/features/auth/presentation/bloc/events/check_auth_status_event.dart';

@@ -1,16 +1,22 @@
 enum AnnouncementTargetAudience {
-  everyone('everyone', 'Everyone'),
-  students('students', 'Students'),
-  teachers('teachers', 'Teachers');
+  everyone,
+  students,
+  teachers;
 
-  final String value;
-  final String displayName;
+  String get displayName {
+    switch (this) {
+      case AnnouncementTargetAudience.everyone:
+        return 'Herkes';
+      case AnnouncementTargetAudience.students:
+        return 'Öğrenciler';
+      case AnnouncementTargetAudience.teachers:
+        return 'Öğretmenler';
+    }
+  }
 
-  const AnnouncementTargetAudience(this.value, this.displayName);
-
-  static AnnouncementTargetAudience fromString(String audience) {
+  static AnnouncementTargetAudience fromString(String value) {
     return AnnouncementTargetAudience.values.firstWhere(
-      (e) => e.value == audience.toLowerCase(),
+          (e) => e.name == value,
       orElse: () => AnnouncementTargetAudience.everyone,
     );
   }

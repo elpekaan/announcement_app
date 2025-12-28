@@ -1,9 +1,8 @@
-import 'package:ciu_announcement/features/announcement/data/datasources/announcement_mock_datasource.dart';
+import 'package:ciu_announcement/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ciu_announcement/core/network/api_client.dart';
 import 'package:ciu_announcement/core/network/network_info/base/base_network_info.dart';
 import 'package:ciu_announcement/core/network/network_info/network_info_impl.dart';
-import 'package:ciu_announcement/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:ciu_announcement/features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'package:ciu_announcement/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:ciu_announcement/features/auth/domain/repositories/auth_repository.dart';
@@ -46,7 +45,7 @@ Future<void> initializeDependencies() async {
 
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
-        () => AuthRepositoryImpl(sl(), sl()),
+        () => AuthRepositoryImpl(sl()),
   );
 
   // UseCases
@@ -69,9 +68,9 @@ Future<void> initializeDependencies() async {
 
   //============ ANNOUNCEMENT FEATURE ============//
 
-  // DataSources - Mock kullanıyoruz (backend hazır olunca değiştireceğiz)
+  // DataSources
   sl.registerLazySingleton<AnnouncementRemoteDataSource>(
-        () => AnnouncementMockDataSource(),
+        () => AnnouncementRemoteDataSourceImpl(sl()),
   );
 
   // Repositories

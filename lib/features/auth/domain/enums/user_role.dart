@@ -1,19 +1,49 @@
 enum UserRole {
-  student('student', 'Student'),
-  teacher('teacher', 'Teacher'),
-  admin('admin', 'Admin');
+  student,
+  teacher,
+  admin,
+  superAdmin;
 
-  final String value;
-  final String displayName;
-
-  const UserRole(this.value, this.displayName);
-
-  static UserRole fromString(String role) {
-    return UserRole.values.firstWhere(
-          (e) => e.value == role.toLowerCase(),
-      orElse: () => UserRole.student,
-    );
+  String get displayName {
+    switch (this) {
+      case UserRole.student:
+        return 'Öğrenci';
+      case UserRole.teacher:
+        return 'Öğretmen';
+      case UserRole.admin:
+        return 'Admin';
+      case UserRole.superAdmin:
+        return 'Super Admin';
+    }
   }
 
-  static List<UserRole> get registerableRoles => [student, teacher];
+  String get apiValue {
+    switch (this) {
+      case UserRole.student:
+        return 'student';
+      case UserRole.teacher:
+        return 'teacher';
+      case UserRole.admin:
+        return 'admin';
+      case UserRole.superAdmin:
+        return 'super_admin';
+    }
+  }
+
+  static List<UserRole> get registerableRoles => [UserRole.student, UserRole.teacher];
+
+  static UserRole fromString(String value) {
+    switch (value) {
+      case 'student':
+        return UserRole.student;
+      case 'teacher':
+        return UserRole.teacher;
+      case 'admin':
+        return UserRole.admin;
+      case 'super_admin':
+        return UserRole.superAdmin;
+      default:
+        return UserRole.student;
+    }
+  }
 }

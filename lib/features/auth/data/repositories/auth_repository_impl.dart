@@ -1,56 +1,41 @@
-import 'package:ciu_announcement/core/errors/exceptions/server_exception.dart';
-import 'package:ciu_announcement/core/errors/exceptions/unauthorized_exception.dart';
+import 'package:dartz/dartz.dart';
 import 'package:ciu_announcement/core/errors/failures/base/base_failure.dart';
 import 'package:ciu_announcement/core/errors/failures/server_failure.dart';
 import 'package:ciu_announcement/core/errors/failures/unauthorized_failure.dart';
-import 'package:ciu_announcement/core/network/network_info/base/base_network_info.dart';
+import 'package:ciu_announcement/core/errors/exceptions/server_exception.dart';
+import 'package:ciu_announcement/core/errors/exceptions/unauthorized_exception.dart';
 import 'package:ciu_announcement/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:ciu_announcement/features/auth/domain/entities/user_entity.dart';
-import 'package:ciu_announcement/features/auth/domain/enums/user_role.dart';
 import 'package:ciu_announcement/features/auth/domain/repositories/auth_repository.dart';
-import 'package:dartz/dartz.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
-  final BaseNetworkInfo _baseNetworkInfo;
 
-  AuthRepositoryImpl(this._remoteDataSource, this._baseNetworkInfo);
+  AuthRepositoryImpl(this._remoteDataSource);
 
   @override
-  Future<Either<BaseFailure, UserEntity>> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<Either<BaseFailure, UserEntity>> login(String email, String password) async {
     try {
-      final userModel = await _remoteDataSource.login(
-        email: email,
-        password: password,
-      );
+      final userModel = await _remoteDataSource.login(email, password);
       return Right(userModel.toEntity());
     } on UnauthorizedException catch (e) {
       return Left(UnauthorizedFailure(e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message, statusCode: e.statusCode));
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<BaseFailure, UserEntity>> register({
-    required String name,
-    required String email,
-    required String password,
-    required UserRole role,
-  }) async {
+  Future<Either<BaseFailure, UserEntity>> register(String name, String email, String password, String role) async {
     try {
-      final userModel = await _remoteDataSource.register(
-        name: name,
-        email: email,
-        password: password,
-        role: role,
-      );
+      final userModel = await _remoteDataSource.register(name, email, password, role);
       return Right(userModel.toEntity());
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message, statusCode: e.statusCode));
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -60,7 +45,9 @@ class AuthRepositoryImpl implements AuthRepository {
       await _remoteDataSource.logout();
       return const Right(null);
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message, statusCode: e.statusCode));
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
@@ -72,19 +59,19 @@ class AuthRepositoryImpl implements AuthRepository {
     } on UnauthorizedException catch (e) {
       return Left(UnauthorizedFailure(e.message));
     } on ServerException catch (e) {
-      return Left(ServerFailure(e.message, statusCode: e.statusCode));
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 
   @override
   Future<Either<BaseFailure, bool>> isLoggedIn() async {
     try {
-      await _remoteDataSource.getCurrentUser();
-      return const Right(true);
-    } on UnauthorizedException {
-      return const Right(false);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message, statusCode: e.statusCode));
+      final result = await _remoteDataSource.isLoggedIn();
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

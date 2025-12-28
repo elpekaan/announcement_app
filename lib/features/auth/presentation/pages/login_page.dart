@@ -1,15 +1,15 @@
-import 'package:ciu_announcement/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:ciu_announcement/features/auth/presentation/bloc/events/login_requested_event.dart';
-import 'package:ciu_announcement/features/auth/presentation/bloc/states/auth_authenticated_state.dart';
-import 'package:ciu_announcement/features/auth/presentation/bloc/states/auth_error_state.dart';
-import 'package:ciu_announcement/features/auth/presentation/bloc/states/auth_loading_state.dart';
-import 'package:ciu_announcement/features/auth/presentation/bloc/states/base/auth_state.dart';
-import 'package:ciu_announcement/features/auth/presentation/pages/register_page.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/forms/login_form_widget.dart';
-import 'package:ciu_announcement/injection_container.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ciu_announcement/injection_container.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/events/login_requested_event.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/states/base/auth_state.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/states/auth_authenticated_state.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/states/auth_loading_state.dart';
+import 'package:ciu_announcement/features/auth/presentation/bloc/states/auth_error_state.dart';
+import 'package:ciu_announcement/features/auth/presentation/pages/register_page.dart';
+import 'package:ciu_announcement/features/auth/presentation/widgets/forms/login_form_widget.dart';
+import 'package:ciu_announcement/features/home/presentation/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -53,14 +53,17 @@ class _LoginPageState extends State<LoginPage> {
     return BlocProvider(
       create: (_) => sl<AuthBloc>(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Sign In')),
+        appBar: AppBar(title: const Text('Giriş Yap')),
         body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthAuthenticatedState) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Welcome ${state.user.name}')),
+                SnackBar(content: Text('Hoş geldin ${state.user.name}')),
               );
-              // TODO: Navigate to home page
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const HomePage()),
+              );
             } else if (state is AuthErrorState) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -79,13 +82,13 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const SizedBox(height: 48),
                     Text(
-                      'CIU Announcement',
+                      'CIU Duyuru',
                       style: Theme.of(context).textTheme.headlineLarge,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Log in to your account',
+                      'Hesabınıza giriş yapın',
                       style: Theme.of(context).textTheme.bodyLarge,
                       textAlign: TextAlign.center,
                     ),
@@ -100,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: _navigateToRegister,
-                      child: const Text('Register'),
+                      child: const Text('Hesabın yok mu? Kayıt ol'),
                     ),
                   ],
                 ),

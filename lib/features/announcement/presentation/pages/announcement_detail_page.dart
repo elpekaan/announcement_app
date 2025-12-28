@@ -59,7 +59,7 @@ class AnnouncementDetailPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: _getPriorityColor(announcement.priority).withOpacity(0.1),
+                            color: _getPriorityColor(announcement.priority).withAlpha(25),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -74,7 +74,7 @@ class AnnouncementDetailPage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.secondary.withOpacity(0.1),
+                            color: AppColors.secondary.withAlpha(25),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(

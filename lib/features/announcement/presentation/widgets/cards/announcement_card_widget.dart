@@ -47,7 +47,7 @@ class AnnouncementCardWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: _getPriorityColor().withOpacity(0.1),
+                      color: _getPriorityColor().withAlpha(25),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -63,7 +63,7 @@ class AnnouncementCardWidget extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.secondary.withOpacity(0.1),
+                      color: AppColors.secondary.withAlpha(25),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

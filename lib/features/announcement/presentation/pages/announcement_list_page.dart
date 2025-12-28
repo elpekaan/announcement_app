@@ -15,15 +15,19 @@ import 'package:ciu_announcement/features/announcement/presentation/pages/announ
 import 'package:ciu_announcement/features/announcement/presentation/pages/announcement_edit_page.dart';
 
 class AnnouncementListPage extends StatelessWidget {
+  final int currentUserId;
   final bool canCreate;
   final bool canEdit;
   final bool canDelete;
+  final bool canManageAll;
 
   const AnnouncementListPage({
     super.key,
+    required this.currentUserId,
     this.canCreate = false,
     this.canEdit = false,
     this.canDelete = false,
+    this.canManageAll = false,
   });
 
   @override
@@ -31,24 +35,40 @@ class AnnouncementListPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<AnnouncementBloc>()..add(const GetAllAnnouncementsEvent()),
       child: _AnnouncementListView(
+        currentUserId: currentUserId,
         canCreate: canCreate,
         canEdit: canEdit,
         canDelete: canDelete,
+        canManageAll: canManageAll,
       ),
     );
   }
 }
 
 class _AnnouncementListView extends StatelessWidget {
+  final int currentUserId;
   final bool canCreate;
   final bool canEdit;
   final bool canDelete;
+  final bool canManageAll;
 
   const _AnnouncementListView({
+    required this.currentUserId,
     required this.canCreate,
     required this.canEdit,
     required this.canDelete,
+    required this.canManageAll,
   });
+
+  bool _canEditThis(int authorId) {
+    if (canManageAll) return true;
+    return canEdit && authorId == currentUserId;
+  }
+
+  bool _canDeleteThis(int authorId) {
+    if (canManageAll) return true;
+    return canDelete && authorId == currentUserId;
+  }
 
   void _navigateToDetail(BuildContext context, int id) {
     Navigator.push(
@@ -60,24 +80,26 @@ class _AnnouncementListView extends StatelessWidget {
   }
 
   void _navigateToCreate(BuildContext context) {
+    final bloc = context.read<AnnouncementBloc>();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => const AnnouncementCreatePage(),
       ),
     ).then((_) {
-      context.read<AnnouncementBloc>().add(const GetAllAnnouncementsEvent());
+      bloc.add(const GetAllAnnouncementsEvent());
     });
   }
 
   void _navigateToEdit(BuildContext context, int id) {
+    final bloc = context.read<AnnouncementBloc>();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => AnnouncementEditPage(announcementId: id),
       ),
     ).then((_) {
-      context.read<AnnouncementBloc>().add(const GetAllAnnouncementsEvent());
+      bloc.add(const GetAllAnnouncementsEvent());
     });
   }
 
@@ -107,14 +129,11 @@ class _AnnouncementListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Duyurular'),
-      ),
       floatingActionButton: canCreate
           ? FloatingActionButton(
-        onPressed: () => _navigateToCreate(context),
-        child: const Icon(Icons.add),
-      )
+              onPressed: () => _navigateToCreate(context),
+              child: const Icon(Icons.add),
+            )
           : null,
       body: BlocConsumer<AnnouncementBloc, AnnouncementState>(
         listener: (context, state) {
@@ -153,12 +172,15 @@ class _AnnouncementListView extends StatelessWidget {
                 itemCount: state.announcements.length,
                 itemBuilder: (context, index) {
                   final announcement = state.announcements[index];
+                  final showEdit = _canEditThis(announcement.authorId);
+                  final showDelete = _canDeleteThis(announcement.authorId);
+                  
                   return AnnouncementCardWidget(
                     announcement: announcement,
                     onTap: () => _navigateToDetail(context, announcement.id),
-                    onEdit: canEdit ? () => _navigateToEdit(context, announcement.id) : null,
-                    onDelete: canDelete ? () => _showDeleteDialog(context, announcement.id) : null,
-                    showActions: canEdit || canDelete,
+                    onEdit: showEdit ? () => _navigateToEdit(context, announcement.id) : null,
+                    onDelete: showDelete ? () => _showDeleteDialog(context, announcement.id) : null,
+                    showActions: showEdit || showDelete,
                   );
                 },
               ),

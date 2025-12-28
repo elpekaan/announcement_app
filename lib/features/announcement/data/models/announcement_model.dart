@@ -5,6 +5,7 @@ import 'package:ciu_announcement/features/announcement/domain/enums/announcement
 import 'package:ciu_announcement/features/announcement/domain/enums/announcement_target_audience.dart';
 
 class AnnouncementModel extends BaseModel<AnnouncementEntity> {
+  final int id;
   final String title;
   final String content;
   final AnnouncementCategory category;
@@ -12,9 +13,11 @@ class AnnouncementModel extends BaseModel<AnnouncementEntity> {
   final AnnouncementTargetAudience targetAudience;
   final int authorId;
   final String authorName;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
 
-  const AnnouncementModel({
-    required super.id,
+  AnnouncementModel({
+    required this.id,
     required this.title,
     required this.content,
     required this.category,
@@ -22,22 +25,22 @@ class AnnouncementModel extends BaseModel<AnnouncementEntity> {
     required this.targetAudience,
     required this.authorId,
     required this.authorName,
-    required super.createdAt,
-    super.updatedAt,
+    required this.createdAt,
+    this.updatedAt,
   });
 
   factory AnnouncementModel.fromJson(Map<String, dynamic> json) {
     return AnnouncementModel(
-      id: json['id'] as int,
-      title: json['title'] as String,
-      content: json['content'] as String,
-      category: AnnouncementCategory.fromString(json['category'] as String),
-      priority: AnnouncementPriority.fromString(json['priority'] as String),
-      targetAudience: AnnouncementTargetAudience.fromString(json['target_audience'] as String),
-      authorId: json['author_id'] as int,
-      authorName: json['author_name'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_At'] as String) : null,
+      id: json['id'],
+      title: json['title'],
+      content: json['content'],
+      category: AnnouncementCategory.fromString(json['category']),
+      priority: AnnouncementPriority.fromString(json['priority']),
+      targetAudience: AnnouncementTargetAudience.fromString(json['target_audience']),
+      authorId: json['author_id'],
+      authorName: json['author_name'],
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
     );
   }
 
@@ -47,9 +50,9 @@ class AnnouncementModel extends BaseModel<AnnouncementEntity> {
       'id': id,
       'title': title,
       'content': content,
-      'category': category.value,
-      'priority': priority.value,
-      'target_audience': targetAudience.value,
+      'category': category.name,
+      'priority': priority.name,
+      'target_audience': targetAudience.name,
       'author_id': authorId,
       'author_name': authorName,
       'created_at': createdAt.toIso8601String(),

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ciu_announcement/features/auth/domain/enums/user_role.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/inputs/auth_text_field_widget.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/inputs/auth_password_field_widget.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/inputs/auth_role_dropdown_widget.dart';
-import 'package:ciu_announcement/features/auth/presentation/widgets/buttons/auth_submit_button_widget.dart';
 
 class RegisterFormWidget extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -36,79 +32,111 @@ class RegisterFormWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AuthTextFieldWidget(
+          TextFormField(
             controller: nameController,
-            labelText: 'Name & Surname',
-            hintText: 'Please enter your name and surname',
+            decoration: const InputDecoration(
+              labelText: 'Ad Soyad',
+              hintText: 'Adınız Soyadınız',
+              prefixIcon: Icon(Icons.person_outline),
+            ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Name & Surname required';
+                return 'Ad soyad gerekli';
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
-          AuthTextFieldWidget(
+          TextFormField(
             controller: emailController,
-            labelText: 'Email',
-            hintText: 'ornek@ciu.edu.tr',
+            decoration: const InputDecoration(
+              labelText: 'Email',
+              hintText: 'ornek@ciu.edu.tr',
+              prefixIcon: Icon(Icons.email_outlined),
+            ),
             keyboardType: TextInputType.emailAddress,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Email required';
+                return 'Email gerekli';
               }
               if (!value.contains('@')) {
-                return 'Invalid email format';
+                return 'Geçerli bir email girin';
+              }
+              if (!value.endsWith('@ciu.edu.tr')) {
+                return 'Sadece @ciu.edu.tr uzantılı mail adresleri kabul edilmektedir';
               }
               return null;
             },
           ),
           const SizedBox(height: 16),
-          AuthRoleDropdownWidget(
-            selectedRole: selectedRole,
+          TextFormField(
+            controller: passwordController,
+            decoration: const InputDecoration(
+              labelText: 'Şifre',
+              hintText: 'En az 6 karakter',
+              prefixIcon: Icon(Icons.lock_outline),
+            ),
+            obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Şifre gerekli';
+              }
+              if (value.length < 6) {
+                return 'Şifre en az 6 karakter olmalı';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: confirmPasswordController,
+            decoration: const InputDecoration(
+              labelText: 'Şifre Tekrar',
+              hintText: 'Şifrenizi tekrar girin',
+              prefixIcon: Icon(Icons.lock_outline),
+            ),
+            obscureText: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Şifre tekrarı gerekli';
+              }
+              if (value != passwordController.text) {
+                return 'Şifreler eşleşmiyor';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          DropdownButtonFormField<UserRole>(
+            decoration: const InputDecoration(
+              labelText: 'Kullanıcı Tipi',
+              hintText: 'Seçiniz',
+              prefixIcon: Icon(Icons.badge_outlined),
+            ),
+            items: UserRole.registerableRoles.map((role) {
+              return DropdownMenuItem<UserRole>(
+                value: role,
+                child: Text(role.displayName),
+              );
+            }).toList(),
             onChanged: onRoleChanged,
             validator: (value) {
               if (value == null) {
-                return 'Role required';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          AuthPasswordFieldWidget(
-            controller: passwordController,
-            labelText: 'Password',
-            hintText: 'Password must be at least 8 characters',
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Password required';
-              }
-              if (value.length < 8) {
-                return 'Password must be at least 8 characters';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          AuthPasswordFieldWidget(
-            controller: confirmPasswordController,
-            labelText: 'Password Confirmation',
-            hintText: 'Please confirm your password',
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Password confirmation required';
-              }
-              if (value != passwordController.text) {
-                return 'Passwords do not match';
+                return 'Kullanıcı tipi seçin';
               }
               return null;
             },
           ),
           const SizedBox(height: 24),
-          AuthSubmitButtonWidget(
-            text: 'Register',
-            onPressed: onSubmit,
-            isLoading: isLoading,
+          ElevatedButton(
+            onPressed: isLoading ? null : onSubmit,
+            child: isLoading
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Kayıt Ol'),
           ),
         ],
       ),
